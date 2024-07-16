@@ -2,14 +2,14 @@ import query from '../config/db.js';
 
 const createRecipeTable = async () => {
     try {
-        const queryStr = `CREATE TABLE recipes(
+        const queryStr = `CREATE TABLE IF NOT EXISTS recipes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description VARCHAR(500) NOT NULL,
     image TEXT,
     user_id INT,
-    FOREIGN KEY(user_id) REFERENCES users(id)
-    );`
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);`
         await query(queryStr)
     } catch (err) {}
 };
@@ -18,8 +18,8 @@ export const createRecipe = async (title, description, image, user_id) => {
     try {
         const queryStr = `INSERT INTO Recipe.recipes
     (title, description, image, user_id)
-    VALUES(?, ?);`
-        const recipe = await query(queryStr, [title, description, image, user_id])
+    VALUES(?, ?, ?, ?);`
+        const recipe = await query(queryStr, [title, description, image, user_id]);
         return recipe;
     } catch (err) {}
 };
@@ -48,8 +48,8 @@ export const getRecipeById = async (id) => {
         const queryStr = `SELECT *
         FROM Recipe.recipes
         WHERE id=?;`
-        const recipe = await query(queryStr, id)
-        return recipe;
+        const recipes = await query(queryStr, id)
+        return recipes[0];
     } catch (err) {}
 };
 

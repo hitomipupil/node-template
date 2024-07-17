@@ -1,4 +1,12 @@
 import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
+// import path, {dirname} from 'path';
+// import {fileURLToPath} from 'url';
+
+// Construct path
+// const __filename = fileURLToPath(import.meta.url);
+// const PATH = dirname(__filename);
+dotenv.config();
 
 const pool = mysql.createPool({
     host: process.env.DB_HOST,
@@ -17,6 +25,7 @@ const query = async (sql, values) => {
         const [results] = await connection.query(sql, values);
         return results;
     } catch (err) {
+        console.log(err);
         return err;
     } finally {
         if (connection) {

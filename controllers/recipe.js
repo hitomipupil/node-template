@@ -1,48 +1,43 @@
-import query from '../config/db.js';
 import { createRecipe, deleteRecipe, getRecipeById, listRecipes, updateRecipe } from '../models/recipe.js';
 
 const recipeControllers = {
     getAllRecipes: async (req, res) => {
-        res.render('home', {
-            title: 'Recipe',
-            path: '/recipes',
-            recipes: listRecipes()
+        const recipes = await listRecipes();
+        res.status(200).json({
+            recipes
         });
-    },
+    }, 
     getOneRecipe: async (req, res) => {
         const { id } = req.params;
-        res.render('recipe', {
-            id: id,
-            title: 'Recipe',
-            path: '/recipes',
-            recipe: getRecipeById()
+        const recipe = await getRecipeById(id);
+        res.status(200).json({
+            recipe
         });
     },
     postRecipe: async (req, res) => {
-        createRecipe() // how to get title and user_id from user?
-        res.render('home', {
-            title: 'Recipe',
-            path: '/recipes',
-            recipes: listRecipes()
+        const { title, description, image, user_id } = req.body;
+        const insertRecipe = await createRecipe(title, description, image, user_id);
+        const recipe = await getRecipeById(insertRecipe.insertId);
+        res.status(200).json({
+            recipe
         });
     },
     updateRecipe: async (req, res) => {
         const { id } = req.params;
-        res.render('recipe', {
-            id: id,
-            title: 'Recipe',
-            path: '/recipes/update',
-            recipe: updateRecipe()
+        // get body
+        const { title, description, image, user_id } = req.body;
+        // update
+        await updateRecipe(title, description, image, user_id, id);
+        // fetch again the new recipe
+        const newRecipe = await getRecipeById(id);
+        res.status(200).json({
+            newRecipe
         });
     },
     deleteRecipe: async (req, res) => {
         const { id } = req.params;
-        res.render('recipe', {
-            id: id,
-            title: 'Recipe',
-            path: '/recipes/delete',
-            recipe: deleteRecipe()
-        });
+        await deleteRecipe(id);
+        res.status(200).json();
     },
 };
 

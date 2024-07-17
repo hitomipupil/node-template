@@ -12,7 +12,7 @@ import userRoutes from './routes/user.js';
 import recipeRoutes from './routes/recipe.js';
 
 // set port
-const PORT = process.env.PORT || 5009;
+const PORT = process.env.PORT;
 
 // Construct path
 const __filename = fileURLToPath(import.meta.url);
@@ -30,8 +30,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(PATH, 'public')));
 
 // create tables
-createUserTable();
-createRecipeTable();
+await createUserTable();
+await createRecipeTable();
 
 // use routes
 app.use(userRoutes);

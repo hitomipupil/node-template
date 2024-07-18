@@ -1,5 +1,8 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import { expressjwt } from 'express-jwt';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -36,6 +39,16 @@ await createRecipeTable();
 // use routes
 app.use(userRoutes);
 app.use(recipeRoutes);
+
+// Secret key for JWT signing and verification
+const secretKey = process.env.SECRET_KEY;
+
+// JWT middleware for verifying tokens
+app.use(
+    expressjwt({ secret: secretKey, algorithms: ['HS256'] }).unless({
+        path: ['/login', '/register']
+    })
+);
 
 // error
 app.use((err, req, res, next) => {

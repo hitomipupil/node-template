@@ -45,7 +45,7 @@ const secretKey = process.env.SECRET_KEY;
 
 // JWT middleware for verifying tokens
 app.use(
-    expressjwt({ secret: secretKey, algorithms: ['HS256'] }).unless({
+    expressjwt({ secret: secretKey, algorithms: ['HS256'], getToken: req => req.cookies.token }).unless({
         path: ['/login', '/register']
     })
 );

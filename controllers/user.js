@@ -33,15 +33,13 @@ const userControllers = {
 
     login: async (req, res) => {
         try{
-        // receive username and password
         const { username, password } = req.body;
-        // check if there's that info in the user table
         const user = await getUserByUsername(username);
         if (user && matchPasswords(password, user.password)) {
         const token = jwt.sign({ user: username }, secretKey);
+        res.cookie('token', token,{maxAge:900000,httpOnly:true});
         res.json({ token });
         } else {
-        // if not, say info is wrong
         res.status(404).json({ error: 'Incorrect username or password' });
         }
         } catch (err) {

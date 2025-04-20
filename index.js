@@ -1,5 +1,8 @@
 import express from 'express';
 import cookieParser from 'cookie-parser';
+import { expressjwt } from 'express-jwt';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
@@ -12,7 +15,7 @@ import userRoutes from './routes/user.js';
 import recipeRoutes from './routes/recipe.js';
 
 // set port
-const PORT = process.env.PORT || 5009;
+const PORT = process.env.PORT;
 
 // Construct path
 const __filename = fileURLToPath(import.meta.url);
@@ -30,12 +33,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(PATH, 'public')));
 
 // create tables
-createUserTable();
-createRecipeTable();
+await createUserTable();
+await createRecipeTable();
 
 // use routes
 app.use(userRoutes);
 app.use(recipeRoutes);
+
+// Secret key for JWT signing and verification
+const secretKey = process.env.SECRET_KEY;
+
+// JWT middleware for verifying tokens
+app.use(
+    expressjwt({ secret: secretKey, algorithms: ['HS256'], getToken: req => req.cookies.token }).unless({
+        path: ['/login', '/register']
+    })
+);
 
 // error
 app.use((err, req, res, next) => {
